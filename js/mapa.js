@@ -2,77 +2,71 @@ let map;
 let geojsonLayer;
 
 document.addEventListener("DOMContentLoaded", function() {
-    console.log("Iniciando Operación Rescate del Mapa...");
+    console.log("Iniciando renderizado del mapa corregido...");
     
     // 1. Inicializar el mapa
     map = L.map('map').setView([15, 10], 2);
 
-    // 2. CREAR UN PANEL EXCLUSIVO PARA NUESTROS POLÍGONOS (Evita que el mapa base los tape)
-    map.createPane('capaFronteras');
-    map.getPane('capaFronteras').style.zIndex = 650; // Forzado por encima de los tiles
-    map.getPane('capaFronteras').style.pointerEvents = 'none'; // Permite hacer click a través de ella
-
-    // 3. Capa base minimalista de CartoDB
+    // 2. Capa base de CartoDB
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
         attribution: '© OpenStreetMap contributors © CARTODB',
         maxZoom: 19
     }).addTo(map);
 
-    // Forzar recalculo de espacio
+    // Forzar recalculo de espacio visual
     setTimeout(() => {
         map.invalidateSize();
     }, 300);
 
-    // 4. Descargar la data macro
+    // 3. Descargar la data macro
     fetch('data/datos_macro_riesgo.json')
         .then(res => res.json())
         .then(datosLogistica => {
             console.log("Data de riesgos lista para cruzar:", datosLogistica);
             
-            // 5. Descargar las fronteras geográficas
+            // 4. Descargar las fronteras geográficas
             return fetch('data/paises_geo.json')
                 .then(res => res.json())
                 .then(geojsonData => {
                     
                     geojsonLayer = L.geoJson(geojsonData, {
-                        pane: 'capaFronteras', // Obligamos a usar el panel superior
                         style: function(feature) {
-                            const codigoGeo = (feature.id || feature.properties.id || feature.properties.iso_a2 || feature.properties.ISO_A2 || "").toUpperCase().trim();
-                            const datosMatch = datosLogistica.find(p => p.pais_id.toUpperCase().trim() === codigoGeo);
+                            // Extraer código del país limpiando espacios y pasándolo a mayúsculas
+                            const props = feature.properties || {};
+                            const codigoGeo = (feature.id || props.id || props.iso_a2 || props.ISO_A2 || props.name || "").toUpperCase().trim();
                             
-                            // SI NO HACE MATCH, LO PINTAMOS EN GRIS OSCURO PARA VER SI EXISTE LA FRONTERA
-                            let colorFinal = '#95a5a6'; 
+                            // Buscar coincidencia con la data local
+                            const datosMatch = datosLogistica.find(p => p.pais_id.toUpperCase().trim() === codigoGeo || p.nombre.toUpperCase().trim() === codigoGeo);
+                            
+                            // Por defecto, pintar el resto del mundo en gris para ver que sí funcione
+                            let colorFinal = '#bdc3c7'; 
                             let opacidadFinal = 0.4;
 
                             if (datosMatch) {
                                 const score = parseFloat(datosMatch.score_riesgo_logistico);
-                                opacidadFinal = 0.9; // Casi opaco para que resalte sí o sí
+                                opacidadFinal = 0.85; // Resaltar tus países monitoreados
                                 
                                 if (score >= 0.70) {
-                                    colorFinal = '#dc3545'; // Rojo
+                                    colorFinal = '#dc3545'; // Rojo - Riesgo Crítico
                                 } else if (score >= 0.40) {
-                                    colorFinal = '#ffc107'; // Amarillo
-                               .350 } else {
-                                    colorFinal = '#198754'; // Verde
+                                    colorFinal = '#ffc107'; // Amarillo - Riesgo Medio
+                                } else {
+                                    colorFinal = '#198754'; // Verde - Riesgo Bajo
                                 }
                             }
 
                             return {
                                 fillColor: colorFinal,
-                                weight: datosMatch ? 2.5 : 0.8,
+                                weight: datosMatch ? 2.0 : 0.7,
                                 opacity: 1,
-                                color: datosMatch ? '#000000' : '#ffffff', // Bordes negros para tus países, blancos para el resto
+                                color: datosMatch ? '#212529' : '#ffffff', // Bordes oscuros para tus países
                                 fillOpacity: opacidadFinal
                             };
                         },
-                        onEachFeature: function(feature, layer) {
-                            const codigoGeo = (feature.id || feature.properties.id || feature.properties.iso_a2 || feature.properties.ISO_A2 || "").toUpperCase().trim();
-                            const datosMatch = datosLogistica.find(p => p.pais_id.toUpperCase().trim() === codigoGeo);
-
-                            // Activar eventos de interacción para que Leaflet reconozca los polígonos
-                            if (layer._path) {
-                                layer._path.style.pointerEvents = 'auto'; 
-                            }
+                        onEachFeature: function(feature, featureLayer) {
+                            const props = feature.properties || {};
+                            const codigoGeo = (feature.id || props.id || props.iso_a2 || props.ISO_A2 || props.name || "").toUpperCase().trim();
+                            const datosMatch = datosLogistica.find(p => p.pais_id.toUpperCase().trim() === codigoGeo || p.nombre.toUpperCase().trim() === codigoGeo);
 
                             if (datosMatch) {
                                 const contenidoPopup = `
@@ -90,11 +84,11 @@ document.addEventListener("DOMContentLoaded", function() {
                                         </table>
                                     </div>
                                 `;
-                                layer.bindPopup(contenidoPopup);
+                                featureLayer.bindPopup(contenidoPopup);
 
-                                layer.on({
+                                featureLayer.on({
                                     mouseover: function(e) {
-                                        e.target.setStyle({ fillOpacity: 1, weight: 3, color: '#0d6efd' });
+                                        e.target.setStyle({ fillOpacity: 0.95, weight: 2.5, color: '#0d6efd' });
                                     },
                                     mouseout: function(e) {
                                         geojsonLayer.resetStyle(e.target);
@@ -104,8 +98,8 @@ document.addEventListener("DOMContentLoaded", function() {
                         }
                     }).addTo(map);
                     
-                    console.log("¡Z-Index y paneles forzados arriba con éxito!");
+                    console.log("¡Geovisor cargado y procesado sin errores sintácticos!");
                 });
         })
-        .catch(err => console.error("Error en la cadena de rendering:", err));
+        .catch(err => console.error("Error cargando los archivos de configuración del mapa:", err));
 });
