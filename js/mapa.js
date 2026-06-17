@@ -66,8 +66,9 @@ document.addEventListener("DOMContentLoaded", function() {
                         onEachFeature: function(feature, featureLayer) {
                             const props = feature.properties || {};
                             const codigoGeo = (feature.id || props.id || props.iso_a2 || props.ISO_A2 || props.name || "").toUpperCase().trim();
-                            const datosMatch = datosLogistica.find(p => p.pais_id.toUpperCase().trim() === codigoGeo || p.nombre.toUpperCase().trim() === codigoGeo);
-
+                            const datosMatch = datosLogistica.find(p => 
+                                (p.pais_id && p.pais_id.toUpperCase().trim() === codigoGeo) || 
+                                (p.nombre && p.nombre.toUpperCase().trim() === codigoGeo);
                             if (datosMatch) {
                                 const contenidoPopup = `
                                     <div style="font-family: Arial, sans-serif; padding: 5px; min-width: 190px;">
