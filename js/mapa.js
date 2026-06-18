@@ -2,13 +2,13 @@ let map;
 let geojsonLayer;
 let mapaInicializado = false; // Bandera para evitar duplicados
 
-// Esta función solo creará el mapa físico cuando la pestaña sea visible
+// Esta función creará el mapa físico cuando la pestaña sea visible
 function inicializarGeovisor() {
     if (mapaInicializado) return; // Si ya se creó, no hacer nada
 
     console.log("Inicializando contenedor físico del geovisor...");
     
-    // 1. Crear el mapa base
+    // 1. Crear el mapa base (usando tu variable global 'map')
     map = L.map('map').setView([15, 10], 2);
 
     // 2. Capa base de CartoDB
@@ -19,99 +19,75 @@ function inicializarGeovisor() {
 
     mapaInicializado = true;
 
-    // 3. Cargar datos y pintar polígonos inmediatamente después
+    // 3. Cargar los datos predictivos integrados de SANGEL PREDICTOR
     cargarYAcoplarDatos();
 }
 
 function cargarYAcoplarDatos() {
-    console.log("Descargando capas geográficas y macroeconómicas...");
+    console.log("Cargando base de datos espacial e incertidumbres desde la carpeta data...");
     
-    // Descargar la data macro
-    fetch('data/datos_macro_riesgo.json')
+    // Cargamos directamente el archivo optimizado que generó Python
+    fetch('data/paises_geovisor.json')
         .then(res => res.json())
-        .then(datosLogistica => {
-            console.log("Data de riesgos lista para cruzar:", datosLogistica);
+        .then(geojsonData => {
             
-            // Descargar las fronteras geográficas
-            return fetch('data/paises_geo.json')
-                .then(res => res.json())
-                .then(geojsonData => {
+            geojsonLayer = L.geoJson(geojsonData, {
+                // Estilo dinámico usando los colores calculados en el backend de Python
+                style: function(feature) {
+                    const props = feature.properties || {};
                     
-                    geojsonLayer = L.geoJson(geojsonData, {
-                        style: function(feature) {
-                            const props = feature.properties || {};
-                            const codigoGeo = (feature.id || props.id || props.iso_a2 || props.ISO_A2 || props.name || "").toUpperCase().trim();
-                            
-                            const datosMatch = datosLogistica.find(p => 
-                                (p.pais_id && p.pais_id.toUpperCase().trim() === codigoGeo) || 
-                                (p.nombre && p.nombre.toUpperCase().trim() === codigoGeo)
-                            );
-                            
-                            let colorFinal = '#bdc3c7'; 
-                            let opacidadFinal = 0.4;
+                    // Si el país tiene color asignado por Python lo usa; si no, aplica gris por defecto
+                    let colorFinal = props.color_hex || '#bdc3c7'; 
+                    let opacidadFinal = props.color_hex ? 0.75 : 0.4;
 
-                            if (datosMatch) {
-                                const score = parseFloat(datosMatch.score_riesgo_logistico);
-                                opacidadFinal = 0.85;
-                                
-                                if (score >= 0.70) {
-                                    colorFinal = '#dc3545';
-                                } else if (score >= 0.40) {
-                                    colorFinal = '#ffc107';
-                                } else {
-                                    colorFinal = '#198754';
-                                }
+                    return {
+                        fillColor: colorFinal,
+                        weight: props.color_hex ? 1.5 : 0.7,
+                        opacity: 1,
+                        color: props.color_hex ? '#212529' : '#ffffff',
+                        fillOpacity: opacidadFinal
+                    };
+                },
+                
+                // Configuración de Popups interactivos y eventos visuales
+                onEachFeature: function(feature, featureLayer) {
+                    const props = feature.properties || {};
+
+                    if (props.name) {
+                        // Construimos la tabla informativa interactiva dentro del Popup
+                        const contenidoPopup = `
+                            <div style="font-family: Arial, sans-serif; padding: 5px; min-width: 200px;">
+                                <h6 style="margin: 0 0 8px 0; border-bottom: 2px solid #dee2e6; padding-bottom: 4px; color: #212529;">
+                                    <strong>${props.name} (${feature.id || 'N/A'})</strong>
+                                </h6>
+                                <table style="width: 100%; font-size: 12px; color: #495057; border-collapse: collapse;">
+                                    <tr><td style="padding: 3px 0;">⚓ <b>Riesgo Logístico:</b></td><td style="text-align: right;">${(props.riesgo_logistico * 100).toFixed(0)}%</td></tr>
+                                    <tr><td style="padding: 3px 0;">📈 <b>Riesgo Macroeconómico:</b></td><td style="text-align: right;">${(props.riesgo_macro * 100).toFixed(0)}%</td></tr>
+                                    <tr style="border-top: 1px solid #dee2e6;">
+                                        <td style="padding-top: 6px;"><b>Incertidumbre Global:</b></td>
+                                        <td style="text-align: right; padding-top: 6px;">
+                                            <span style="color: ${props.color_hex}; font-weight: bold;">${props.alerta || 'N/A'} (${props.incertidumbre_global || 0})</span>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        `;
+                        featureLayer.bindPopup(contenidoPopup);
+
+                        // Efectos visuales de Hover (pasar el mouse por encima)
+                        featureLayer.on({
+                            mouseover: function(e) {
+                                e.target.setStyle({ fillOpacity: 0.95, weight: 2.5, color: '#0d6efd' });
+                            },
+                            mouseout: function(e) {
+                                geojsonLayer.resetStyle(e.target);
                             }
-
-                            return {
-                                fillColor: colorFinal,
-                                weight: datosMatch ? 2.0 : 0.7,
-                                opacity: 1,
-                                color: datosMatch ? '#212529' : '#ffffff',
-                                fillOpacity: opacidadFinal
-                            };
-                        },
-                        onEachFeature: function(feature, featureLayer) {
-                            const props = feature.properties || {};
-                            const codigoGeo = (feature.id || props.id || props.iso_a2 || props.ISO_A2 || props.name || "").toUpperCase().trim();
-                            
-                            const datosMatch = datosLogistica.find(p => 
-                                (p.pais_id && p.pais_id.toUpperCase().trim() === codigoGeo) || 
-                                (p.nombre && p.nombre.toUpperCase().trim() === codigoGeo)
-                            );
-
-                            if (datosMatch) {
-                                const contenidoPopup = `
-                                    <div style="font-family: Arial, sans-serif; padding: 5px; min-width: 190px;">
-                                        <h6 style="margin: 0 0 8px 0; border-bottom: 2px solid #dee2e6; padding-bottom: 4px; color: #212529;">
-                                            <strong>${datosMatch.nombre} (${datosMatch.pais_id})</strong>
-                                        </h6>
-                                        <table style="width: 100%; font-size: 12px; color: #495057;">
-                                            <tr><td>📈 <b>Inflación:</b></td><td style="text-align: right;">${datosMatch.tasa_inflacion}%</td></tr>
-                                            <tr><td>💱 <b>Volatilidad:</b></td><td style="text-align: right;">${datosMatch.volatilidad_divisa}/10</td></tr>
-                                            <tr><td>⚠️ <b>Riesgo País:</b></td><td style="text-align: right;">${datosMatch.riesgo_pais} pts</td></tr>
-                                            <tr><td>⚓ <b>Puerto:</b></td><td style="text-align: right;">${datosMatch.indice_congestion_portuaria}/5</td></tr>
-                                            <tr style="border-top: 1px solid #dee2e6;"><td style="padding-top: 5px;"><b>Score:</b></td>
-                                            <td style="text-align: right; padding-top: 5px;"><span class="badge bg-${datosMatch.score_riesgo_logistico >= 0.7 ? 'danger' : datosMatch.score_riesgo_logistico >= 0.4 ? 'warning' : 'success'}">${datosMatch.score_riesgo_logistico}</span></td></tr>
-                                        </table>
-                                    </div>
-                                `;
-                                featureLayer.bindPopup(contenidoPopup);
-
-                                featureLayer.on({
-                                    mouseover: function(e) {
-                                        e.target.setStyle({ fillOpacity: 0.95, weight: 2.5, color: '#0d6efd' });
-                                    },
-                                    mouseout: function(e) {
-                                        geojsonLayer.resetStyle(e.target);
-                                    }
-                                });
-                            }
-                        }
-                    }).addTo(map);
-                    
-                    console.log("¡Líneas fronterizas y colores renderizados con éxito!");
-                });
+                        });
+                    }
+                }
+            }).addTo(map);
+            
+            console.log("🚀 ¡Geovisor mapeado y renderizado con las capas predictivas del simulador con éxito!");
         })
-        .catch(err => console.error("Error en el acople de datos del mapa:", err));
+        .catch(err => console.error("❌ Error al inyectar capas geográficas en el mapa:", err));
 }
