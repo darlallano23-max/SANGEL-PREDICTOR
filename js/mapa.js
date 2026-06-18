@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function() {
                             const codigoGeo = (feature.id || props.id || props.iso_a2 || props.ISO_A2 || props.name || "").toUpperCase().trim();
                             
                             // Buscar coincidencia con la data local
-                            const datosMatch = datosLogistica.find(p => p.pais_id.toUpperCase().trim() === codigoGeo || p.nombre.toUpperCase().trim() === codigoGeo);
+                            const datosMatch = datosLogistica.find(p => p.pais_id.toUpperCase().trim() === codigoGeo || p.nombre.toUpperCase().trim() === codigoGeo));
                             
                             // Por defecto, pintar el resto del mundo en gris para ver que sí funcione
                             let colorFinal = '#bdc3c7'; 
