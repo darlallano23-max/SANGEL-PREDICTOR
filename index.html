@@ -81,9 +81,92 @@
                 </div>
 
                 <div id="modulo-calculadora" class="modulo-seccion d-none">
-                    <div class="card p-4 shadow-sm bg-white">
-                        <h5>Calculadora Comex & Matriz Excel</h5>
-                        <p class="text-muted">Aquí procesaremos los cálculos y la descarga de tablas financieras.</p>
+                    <div class="row g-4">
+                        <div class="col-xl-5 col-lg-6">
+                            <div class="card p-4 shadow-sm bg-white border-0">
+                                <h5 class="card-title mb-1 fw-bold text-dark"><i class="bi bi-sliders2 me-2 text-primary"></i>Parámetros de Simulación</h5>
+                                <p class="text-muted small mb-4">Introduce las condiciones comerciales. Al cambiar un valor, se proyectará la viabilidad financiera en las rutas del mapamundi.</p>
+                                
+                                <form id="form-calculadora-comex" oninput="if(typeof calcularYRepintarMapa === 'function') calcularYRepintarMapa()">
+                                    <div class="mb-3">
+                                        <label for="input-cantidad" class="form-label fw-semibold small">📦 Cantidad Total a Importar:</label>
+                                        <input type="number" class="form-control form-control-sm" id="input-cantidad" min="1" value="1000" placeholder="Ej. 1000">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="input-precio" class="form-label fw-semibold small">💰 Precio Unitario en Fábrica (EXW):</label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text bg-light">$</span>
+                                            <input type="number" class="form-control" id="input-precio" min="0.01" step="0.01" value="5.00" placeholder="Ej. 5.00">
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label for="input-arancel" class="form-label fw-semibold small">📈 Porcentaje de Arancel Estimado:</label>
+                                        <div class="input-group input-group-sm">
+                                            <input type="number" class="form-control" id="input-arancel" min="0" max="100" value="10" placeholder="Ej. 15">
+                                            <span class="input-group-text bg-light">%</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <button type="button" class="btn btn-sm btn-primary w-100 py-2 fw-bold" onclick="if(typeof calcularYRepintarMapa === 'function') calcularYRepintarMapa()">
+                                        <i class="bi bi-magic me-2"></i>Actualizar Capas del Mapa
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-7 col-lg-6">
+                            <div class="card p-4 shadow-sm bg-white border-0 h-100">
+                                <h5 class="card-title mb-2 fw-bold text-dark"><i class="bi bi-table me-2 text-success"></i>Estructura de Desglose Correlativo</h5>
+                                <p class="text-muted small mb-3">Esta matriz evalúa la acumulación de Incoterms en cascada. Haz clic en cualquier país desde el <b>Módulo Mapa de Calor Global</b> para inspeccionar su desglose financiero individual ajustado por riesgos de Python.</p>
+                                
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-hover align-middle row-border text-secondary" style="font-size: 0.88rem;">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Incoterm / Concepto Logístico</th>
+                                                <th class="text-end">Costo Simulado</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><i class="bi bi-building me-2"></i><b>Valor EXW</b> (Costo de Fábrica Puro)</td>
+                                                <td class="text-end fw-bold text-dark" id="res-exw">$ 0.00</td>
+                                            </tr>
+                                            <tr>
+                                                <td><i class="bi bi-truck me-2"></i><b>Valor FOB</b> (Mercancía + Gastos de Origen)</td>
+                                                <td class="text-end fw-bold text-dark" id="res-fob">$ 0.00</td>
+                                            </tr>
+                                            <tr>
+                                                <td><i class="bi bi-shield-lock me-2 text-warning"></i>Seguro de Carga Internacional (Dinamizado por Macro)</td>
+                                                <td class="text-end text-dark font-monospace" id="res-seguro">$ 0.00</td>
+                                            </tr>
+                                            <tr>
+                                                <td><i class="bi bi-ship me-2"></i><b>Valor CIF</b> (FOB + Flete + Seguro)</td>
+                                                <td class="text-end fw-bold text-dark" id="res-cif">$ 0.00</td>
+                                            </tr>
+                                            <tr>
+                                                <td><i class="bi bi-exclamation-octagon me-2 text-danger"></i>Fondo por Imprevistos Logísticos (Sensibilidad Operativa)</td>
+                                                <td class="text-end text-dark font-monospace" id="res-imprevistos">$ 0.00</td>
+                                            </tr>
+                                            <tr>
+                                                <td><i class="bi bi-cash-coin me-2"></i>Liquidación de Tributos (Arancel + Fodinfa + IVA 15%)</td>
+                                                <td class="text-end text-dark" id="res-impuestos">$ 0.00</td>
+                                            </tr>
+                                            <tr class="table-dark text-white">
+                                                <td><i class="bi bi-house-door me-2"></i><b>Valor DDP Final</b> (Costo Total Puesto en Bodega)</td>
+                                                <td class="text-end fw-bold text-warning" id="res-ddp">$ 0.00</td>
+                                            </tr>
+                                            <tr class="table-warning text-dark fw-bold border-top border-dark">
+                                                <td><i class="bi bi-box-seam me-2"></i>COSTO UNITARIO NACIONALIZADO</td>
+                                                <td class="text-end fs-6 text-danger" id="res-unitario">$ 0.00</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -95,9 +178,10 @@
                 </div>
 
                 <div id="modulo-mapa" class="modulo-seccion d-none">
-                    <div class="card p-3 shadow-sm bg-white">
-                        <h5 class="mb-3">Geovisor de Riesgo en la Cadena de Suministro</h5>
-                        <div id="map" style="height: 520px; width: 100%; border-radius: 8px;"></div>
+                    <div class="card p-3 shadow-sm bg-white border-0">
+                        <h5 class="mb-1 fw-bold text-dark"><i class="bi bi-geo-alt-fill text-danger me-2"></i>Geovisor de Riesgo e Indicadores Financieros</h5>
+                        <p class="text-muted small">Haz clic o pasa el cursor sobre los países para inspeccionar los costos proyectados calculados por la matriz COMEX.</p>
+                        <div id="map" style="height: 520px; width: 100%; border-radius: 8px;" class="shadow-inner border"></div>
                     </div>
                 </div>
 
