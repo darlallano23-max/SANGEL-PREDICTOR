@@ -1,10 +1,14 @@
 let map;
 let geojsonLayer;
+let mapaInicializado = false; // Bandera para evitar duplicados
 
-document.addEventListener("DOMContentLoaded", function() {
-    console.log("Iniciando renderizado del mapa corregido...");
+// Esta función solo creará el mapa físico cuando la pestaña sea visible
+function inicializarGeovisor() {
+    if (mapaInicializado) return; // Si ya se creó, no hacer nada
+
+    console.log("Inicializando contenedor físico del geovisor...");
     
-    // 1. Inicializar el mapa
+    // 1. Crear el mapa base
     map = L.map('map').setView([15, 10], 2);
 
     // 2. Capa base de CartoDB
@@ -13,45 +17,49 @@ document.addEventListener("DOMContentLoaded", function() {
         maxZoom: 19
     }).addTo(map);
 
-    // Forzar recalculo de espacio visual
-    setTimeout(() => {
-        map.invalidateSize();
-    }, 300);
+    mapaInicializado = true;
 
-    // 3. Descargar la data macro
+    // 3. Cargar datos y pintar polígonos inmediatamente después
+    cargarYAcoplarDatos();
+}
+
+function cargarYAcoplarDatos() {
+    console.log("Descargando capas geográficas y macroeconómicas...");
+    
+    // Descargar la data macro
     fetch('data/datos_macro_riesgo.json')
         .then(res => res.json())
         .then(datosLogistica => {
             console.log("Data de riesgos lista para cruzar:", datosLogistica);
             
-            // 4. Descargar las fronteras geográficas
+            // Descargar las fronteras geográficas
             return fetch('data/paises_geo.json')
                 .then(res => res.json())
                 .then(geojsonData => {
                     
                     geojsonLayer = L.geoJson(geojsonData, {
                         style: function(feature) {
-                            // Extraer código del país limpiando espacios y pasándolo a mayúsculas
                             const props = feature.properties || {};
                             const codigoGeo = (feature.id || props.id || props.iso_a2 || props.ISO_A2 || props.name || "").toUpperCase().trim();
                             
-                            // Buscar coincidencia con la data local
-                            const datosMatch = datosLogistica.find(p => p.pais_id.toUpperCase().trim() === codigoGeo || p.nombre.toUpperCase().trim() === codigoGeo));
+                            const datosMatch = datosLogistica.find(p => 
+                                (p.pais_id && p.pais_id.toUpperCase().trim() === codigoGeo) || 
+                                (p.nombre && p.nombre.toUpperCase().trim() === codigoGeo)
+                            );
                             
-                            // Por defecto, pintar el resto del mundo en gris para ver que sí funcione
                             let colorFinal = '#bdc3c7'; 
                             let opacidadFinal = 0.4;
 
                             if (datosMatch) {
                                 const score = parseFloat(datosMatch.score_riesgo_logistico);
-                                opacidadFinal = 0.85; // Resaltar tus países monitoreados
+                                opacidadFinal = 0.85;
                                 
                                 if (score >= 0.70) {
-                                    colorFinal = '#dc3545'; // Rojo - Riesgo Crítico
+                                    colorFinal = '#dc3545';
                                 } else if (score >= 0.40) {
-                                    colorFinal = '#ffc107'; // Amarillo - Riesgo Medio
+                                    colorFinal = '#ffc107';
                                 } else {
-                                    colorFinal = '#198754'; // Verde - Riesgo Bajo
+                                    colorFinal = '#198754';
                                 }
                             }
 
@@ -59,16 +67,19 @@ document.addEventListener("DOMContentLoaded", function() {
                                 fillColor: colorFinal,
                                 weight: datosMatch ? 2.0 : 0.7,
                                 opacity: 1,
-                                color: datosMatch ? '#212529' : '#ffffff', // Bordes oscuros para tus países
+                                color: datosMatch ? '#212529' : '#ffffff',
                                 fillOpacity: opacidadFinal
                             };
                         },
                         onEachFeature: function(feature, featureLayer) {
                             const props = feature.properties || {};
                             const codigoGeo = (feature.id || props.id || props.iso_a2 || props.ISO_A2 || props.name || "").toUpperCase().trim();
+                            
                             const datosMatch = datosLogistica.find(p => 
                                 (p.pais_id && p.pais_id.toUpperCase().trim() === codigoGeo) || 
-                                (p.nombre && p.nombre.toUpperCase().trim() === codigoGeo);
+                                (p.nombre && p.nombre.toUpperCase().trim() === codigoGeo)
+                            );
+
                             if (datosMatch) {
                                 const contenidoPopup = `
                                     <div style="font-family: Arial, sans-serif; padding: 5px; min-width: 190px;">
@@ -99,8 +110,8 @@ document.addEventListener("DOMContentLoaded", function() {
                         }
                     }).addTo(map);
                     
-                    console.log("¡Geovisor cargado y procesado sin errores sintácticos!");
+                    console.log("¡Líneas fronterizas y colores renderizados con éxito!");
                 });
         })
-        .catch(err => console.error("Error cargando los archivos de configuración del mapa:", err));
-});
+        .catch(err => console.error("Error en el acople de datos del mapa:", err));
+}
