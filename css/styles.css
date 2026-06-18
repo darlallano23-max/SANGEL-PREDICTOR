@@ -1,11 +1,6 @@
-/* Estilos personalizados para ajustar elementos móviles */
-#map {
-    z-index: 1; /* Evita que el mapa se superponga a menús desplegables */
-}
-
-@media (max-width: 768px) {
-    #map {
-        height: 300px; /* Reducimos la altura del mapa en celulares para mejor navegación */
+/* ==========================================
+   ESTILOS GENERALES
+   ========================================== */
 body {
     overflow-x: hidden;
     background-color: #f8f9fa;
@@ -37,10 +32,6 @@ body {
     background-color: #f4f6f9;
 }
 
-#wrapper.toggled #sidebar-wrapper {
-    margin-left: -250px;
-}
-
 .list-group-item {
     border: none !important;
     padding: 20px 30px;
@@ -59,11 +50,26 @@ body {
     font-size: 0.8rem;
 }
 
+/* Forzar que el mapa tenga prioridad sobre capas CSS flotantes */
+#map {
+    z-index: 1; 
+}
+
+/* ==========================================
+   RESPONSIVE (PANTALLAS GRANDES Y MÓVILES)
+   ========================================== */
 @media (min-width: 768px) {
     #page-content-wrapper {
         min-width: 0;
         width: 100%;
     }
 }
+
+@media (max-width: 768px) {
+    #map {
+        height: 300px; /* Altura reducida sólo en celulares */
+    }
+    #wrapper.toggled #sidebar-wrapper {
+        margin-left: -250px;
     }
 }
