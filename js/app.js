@@ -1,4 +1,3 @@
-
 // Variable global para compartir la data entre archivos
 let datosPaises = [];
 
@@ -17,20 +16,26 @@ document.addEventListener("DOMContentLoaded", function() {
 
 // Función para cambiar de pestaña estilo SPA (Single Page Application)
 function cambiarModulo(moduloId) {
-    // Ocultar todos los módulos
+    // 1. Ocultar todos los módulos
     document.querySelectorAll('.modulo-seccion').forEach(seccion => {
         seccion.classList.add('d-none');
     });
     
-    // Mostrar solo el módulo que el usuario clickeó
-    document.getElementById(moduloId).classList.remove('d-none');
+    // 2. Mostrar solo el módulo que el usuario clickeó
+    const moduloObjetivo = document.getElementById(moduloId);
+    if (moduloObjetivo) {
+        moduloObjetivo.classList.remove('d-none');
+    }
     
-    // Quitar el estado activo de todos los botones del menú lateral
+    // 3. Quitar el estado activo de todos los botones del menú lateral
     document.querySelectorAll('#sidebar-wrapper .list-group-item').forEach(btn => {
         btn.classList.remove('active');
     });
     
-    // Títulos de la barra superior según la sección activa
+    // 4. Activar el botón correspondiente si existe
+    // (Opcional: puedes añadir lógica para ponerle .active al botón clickeado si usas event targets)
+
+    // 5. Títulos de la barra superior según la sección activa
     const titulos = {
         'modulo-macro': 'Módulo Macroeconómico',
         'modulo-calculadora': 'Calculadora de Comercio Exterior',
@@ -40,15 +45,24 @@ function cambiarModulo(moduloId) {
         'modulo-reporte': 'Reporting Ejecutivo y Exportación'
     };
     
-    document.getElementById('titulo-modulo').innerText = titulos[moduloId];
+    if (titulos[moduloId]) {
+        document.getElementById('titulo-modulo').innerText = titulos[moduloId];
+    }
     
-    // SEGURO DEL MAPA: Forzar a Leaflet a recalcular su tamaño si abren el mapa
+    // 6. CONTROL CRÍTICO Y SEGURO DEL MAPA:
     if (moduloId === 'modulo-mapa') {
+        // Forzar un pequeño delay para asegurarnos de que Bootstrap ya removió el 'd-none' por completo
         setTimeout(() => {
-            if (typeof map !== 'undefined') {
-                map.invalidateSize();
-                console.log("Tamaño del mapa ajustado con éxito.");
+            // Llamar a la inicialización segura que creamos en mapa.js
+            if (typeof inicializarGeovisor === 'function') {
+                inicializarGeovisor();
             }
-        }, 150);
+            
+            // Recalcular dimensiones una vez visible en pantalla para evitar el cuadro gris/blanco
+            if (typeof map !== 'undefined' && map !== null) {
+                map.invalidateSize();
+                console.log("Dimensiones del geovisor adaptadas con éxito.");
+            }
+        }, 200);
     }
 }
