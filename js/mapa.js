@@ -26,8 +26,8 @@ function inicializarGeovisor() {
 function cargarYAcoplarDatos() {
     console.log("Cargando base de datos espacial e incertidumbres desde la carpeta data...");
     
-    // Cargamos directamente el archivo optimizado que generó Python
-    fetch('data/paises_geovisor.json')
+    // TRUCO ROMPE-CACHÉ: Agregamos un timestamp dinámico para obligar al navegador a leer el JSON más reciente
+    fetch('data/paises_geovisor.json?v=' + new Date().getTime())
         .then(res => res.json())
         .then(geojsonData => {
             
