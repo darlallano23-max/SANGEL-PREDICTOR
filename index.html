@@ -253,14 +253,38 @@
                         <div id="map" style="height: 520px; width: 100%; border-radius: 8px;" class="shadow-inner border"></div>
                     </div>
                 </div>
-
                 <div id="modulo-riesgos" class="modulo-seccion d-none">
-                    <div class="card p-4 shadow-sm bg-white">
-                        <h5>Riesgos Críticos Próximos</h5>
-                        <p class="text-muted">Panel de alertas tempranas sobre disrupciones operativas.</p>
-                    </div>
+    <div class="row g-4">
+        <div class="col-xl-4 col-lg-5">
+            <div class="card p-4 shadow-sm bg-white border-0 h-100">
+                <h5 class="fw-bold text-dark mb-1"><i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>Monitoreo de Riesgos</h5>
+                <p class="text-muted small mb-4">Estado actual de las amenazas operativas y financieras sobre tus rutas comerciales activas.</p>
+                
+                <div class="p-3 bg-light rounded text-center border mb-3">
+                    <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.75rem;">Países en Alerta Máxima</small>
+                    <span class="fs-1 fw-bold text-danger" id="kpi-contador-riesgos">0</span>
                 </div>
 
+                <div class="alert alert-warning d-flex align-items-center small" role="alert">
+                    <i class="bi bi-info-circle-fill me-2 fs-5"></i>
+                    <div>
+                        Los indicadores se actualizan dinámicamente según las variaciones macroeconómicas globales.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-8 col-lg-7">
+            <div class="card p-4 shadow-sm bg-white border-0 h-100">
+                <h5 class="fw-bold text-dark mb-3"><i class="bi bi-bell-fill text-warning me-2"></i>Alertas Tempranas Detectadas</h5>
+                
+                <div id="contenedor-alertas-criticas" class="d-flex flex-column gap-3">
+                    <p class="text-muted small text-center my-4">Cargando matriz de vulnerabilidades...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
                 <div id="modulo-reporte" class="modulo-seccion d-none">
                     <div class="card p-4 shadow-sm bg-white">
                         <h5>Reporting Ejecutivo</h5>
