@@ -9,6 +9,8 @@ document.addEventListener("DOMContentLoaded", function() {
         .then(data => {
             datosPaises = data;
             console.log("Data macro lista para usar:", datosPaises);
+            // Renderizar los países inmediatamente en el módulo macro al cargar la app
+            renderizarVistaMacro();
         })
         .catch(error => console.error("Error al precargar los datos macro:", error));
 });
@@ -86,14 +88,82 @@ window.cambiarModulo = function(moduloId) {
         renderizarRiesgosCriticos();
     }
 
-    // 8. CONTROL DE REPORTES (Con verificación segura)
+    // 8. CONTROL DE REPORTES
     if (moduloId === 'modulo-reporte') {
         actualizarPanelReportes();
     }
-}; // Llave de cierre perfecta para cambiarModulo
+};
 
 // =================================================================
-// FUNCIÓN: RENDERIZAR ALERTAS DE RIESGO (ADAPTADA A TU JSON)
+// NUEVA FUNCIÓN: RENDERIZAR PANEL MACROECONÓMICO EN 3 COLUMNAS
+// =================================================================
+function renderizarVistaMacro() {
+    const contenedor = document.getElementById('contenedor-paises-macro');
+    if (!contenedor) return;
+
+    if (!datosPaises || datosPaises.length === 0) {
+        contenedor.innerHTML = `<p class="text-muted text-center col-12 my-4">Cargando base de datos macroeconómicos...</p>`;
+        return;
+    }
+
+    contenedor.innerHTML = ''; // Limpiar contenedor
+
+    datosPaises.forEach(p => {
+        // Formatear los datos reales basados en la estructura de tu JSON
+        const inflacion = p.tasa_inflacion !== undefined ? p.tasa_inflacion.toFixed(1) + '%' : 'N/A';
+        const volatilidad = p.volatilidad_divisa !== undefined ? p.volatilidad_divisa.toFixed(1) + '%' : 'N/A';
+        const riesgoLogistico = p.score_riesgo_logistico !== undefined ? (p.score_riesgo_logistico * 100).toFixed(0) + '%' : 'N/A';
+        const riesgoPais = p.riesgo_pais !== undefined ? p.riesgo_pais + ' pts' : 'N/A';
+        const arancel = p.arancel_promedio !== undefined ? p.arancel_promedio.toFixed(1) + '%' : 'N/A';
+
+        const tarjetaHtml = `
+            <div class="col-xl-4 col-md-6 col-12 mb-4">
+                <div class="card h-100 shadow-sm border-0 bg-white">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+                            <div>
+                                <h6 class="fw-bold m-0 text-dark">${p.nombre || 'Desconocido'}</h6>
+                                <span class="badge bg-secondary-subtle text-secondary fw-semibold uppercase" style="font-size: 0.7rem;">
+                                    ID: ${p.pais_id || 'N/A'}
+                                </span>
+                            </div>
+                            <i class="bi bi-globe2 text-primary fs-5"></i>
+                        </div>
+                        
+                        <div class="row g-2 small text-secondary">
+                            <div class="col-6 mb-2">
+                                <span class="d-block text-muted style="font-size: 0.75rem;">📈 Riesgo País:</span>
+                                <strong class="text-dark">${riesgoPais}</strong>
+                            </div>
+                            <div class="col-6 mb-2">
+                                <span class="d-block text-muted style="font-size: 0.75rem;">⚓ Riesgo Logístico:</span>
+                                <strong class="text-dark">${riesgoLogistico}</strong>
+                            </div>
+                            <div class="col-6 mb-2">
+                                <span class="d-block text-muted style="font-size: 0.75rem;">🎈 Inflación Anual:</span>
+                                <strong class="text-dark">${inflacion}</strong>
+                            </div>
+                            <div class="col-6 mb-2">
+                                <span class="d-block text-muted style="font-size: 0.75rem;">💱 Volatilidad Divisa:</span>
+                                <strong class="text-dark">${volatilidad}</strong>
+                            </div>
+                            <div class="col-12 border-top pt-2">
+                                <div class="d-flex justify-content-between">
+                                    <span>📋 Arancel Promedio:</span>
+                                    <strong class="text-primary">${arancel}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        contenedor.insertAdjacentHTML('beforeend', tarjetaHtml);
+    });
+}
+
+// =================================================================
+// FUNCIÓN: RENDERIZAR ALERTAS DE RIESGO
 // =================================================================
 function renderizarRiesgosCriticos() {
     const contenedor = document.getElementById('contenedor-alertas-criticas');
@@ -207,7 +277,6 @@ function generarReporte() {
     }
 
     if (formato === 'csv') {
-        // Añadimos el BOM \uFEFF para forzar a Excel a leer UTF-8 (evita errores con tildes)
         let contenidoCsv = "\uFEFF";
         contenidoCsv += "Código,Nombre,Riesgo Logístico,Riesgo Macro,Tasa Inflación\n";
 
@@ -228,9 +297,7 @@ function generarReporte() {
         document.body.removeChild(link);
         
     } else if (formato === 'html-print') {
-        // --- INFORME EJECUTIVO IMPRIMIBLE (HERRAMIENTA NATIVA) ---
         const ventanaImpresion = window.open('', '_blank');
-        
         let filasTabla = '';
         datosAExportar.forEach(p => {
             const rLogistico = p.score_riesgo_logistico || 0;
@@ -265,7 +332,6 @@ function generarReporte() {
                     <h2 class="title">🔮 SANGEL Predictor - Informe Global de Riesgos</h2>
                     <div class="meta">Fecha de Emisión: ${new Date().toLocaleString()} | Inteligencia Comercial Internacional</div>
                 </div>
-                <p>Auditoría predictiva automatizada sobre la vulnerabilidad de las operaciones comerciales de los mercados listados:</p>
                 <table>
                     <thead>
                         <tr>
@@ -280,9 +346,6 @@ function generarReporte() {
                         ${filasTabla}
                     </tbody>
                 </table>
-                <div class="footer">
-                    SANGEL Predictor - Datos de Simulación Confidenciales.
-                </div>
                 <script>
                     window.onload = function() { window.print(); }
                 </script>
