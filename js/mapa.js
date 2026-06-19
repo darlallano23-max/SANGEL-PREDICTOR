@@ -90,4 +90,7 @@ function cargarYAcoplarDatos() {
             console.log("🚀 ¡Geovisor mapeado y renderizado con las capas predictivas del simulador con éxito!");
         })
         .catch(err => console.error("❌ Error al inyectar capas geográficas en el mapa:", err));
+    if (typeof calcularYRepintarMapa === 'function') {
+    calcularYRepintarMapa();
+    }
 }
