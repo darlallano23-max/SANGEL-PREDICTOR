@@ -95,16 +95,22 @@ function renderizarRiesgosCriticos() {
     
     if (!contenedor) return;
 
-    // Verificar si hay datos cargados
-    if (typeof datosPaises === 'undefined' || datosPaises.length === 0) {
+    if (!datosPaises || datosPaises.length === 0) {
         contenedor.innerHTML = `<p class="text-muted small text-center my-4">No hay datos macroeconómicos disponibles para analizar riesgos.</p>`;
         return;
     }
 
-    // Filtrar países con riesgo logístico o macro mayor al 60% (0.60)
-    const paisesEnRiesgo = datosPaises.filter(p => p.riesgo_logistico > 0.60 || p.riesgo_macro > 0.60);
+    // FILTRADO DINÁMICO RE REAL: 
+    // - score_riesgo_logistico > 0.40 (40%) debido a congestión o desvíos.
+    // - riesgo_pais > 25 (Si tu escala es de 0 a 100, un 28 ya empieza a marcar alerta moderada/crítica).
+    const paisesEnRiesgo = datosPaises.filter(p => {
+        const rLogistico = p.score_riesgo_logistico || 0;
+        // Normalizamos riesgo_pais a escala 0-1 si viene como entero (ej: 28 -> 0.28)
+        const rMacro = p.riesgo_pais ? p.riesgo_pais / 100 : 0; 
+        
+        return rLogistico > 0.40 || rMacro > 0.25;
+    });
     
-    // Actualizar el número gigante del KPI izquierdo
     if (kpiContador) {
         kpiContador.innerText = paisesEnRiesgo.length;
     }
@@ -119,21 +125,22 @@ function renderizarRiesgosCriticos() {
         return;
     }
 
-    // Limpiar el contenedor antes de inyectar
     contenedor.innerHTML = '';
 
-    // Dibujar una tarjeta interactiva por cada país en riesgo
     paisesEnRiesgo.forEach(p => {
-        // Determinar un color de barra según el nivel de riesgo máximo detectado
-        const maxRiesgo = Math.max(p.riesgo_logistico, p.riesgo_macro);
-        const colorAlerta = maxRiesgo > 0.75 ? 'danger' : 'warning';
+        const rLogistico = p.score_riesgo_logistico || 0;
+        const rMacro = p.riesgo_pais ? p.riesgo_pais / 100 : 0;
+        
+        const maxRiesgo = Math.max(rLogistico, rMacro);
+        // Si el riesgo logístico o macro supera el 50% total normalizado, va a Alerta Severa (rojo), si no Moderado (amarillo)
+        const colorAlerta = maxRiesgo > 0.50 ? 'danger' : 'warning';
         
         const tarjetaHtml = `
             <div class="p-3 bg-light rounded border-start border-${colorAlerta} border-4 shadow-sm mb-2">
                 <div class="d-flex justify-content-between align-items-start mb-2">
                     <div>
                         <h6 class="m-0 fw-bold text-dark">${p.nombre || 'País Desconocido'}</h6>
-                        <small class="text-muted text-uppercase fw-semibold" style="font-size: 0.7rem;">Código Región: ${p.codigo || 'N/A'}</small>
+                        <small class="text-muted text-uppercase fw-semibold" style="font-size: 0.7rem;">Código Región: ${p.pais_id || 'N/A'}</small>
                     </div>
                     <span class="badge bg-${colorAlerta === 'danger' ? 'danger' : 'warning text-dark'} fw-bold">
                         ${colorAlerta === 'danger' ? 'ALERTA SEVERA' : 'RIESGO MODERADO'}
@@ -143,20 +150,20 @@ function renderizarRiesgosCriticos() {
                 <div class="row g-2 mt-1">
                     <div class="col-sm-6">
                         <div class="d-flex justify-content-between mb-1 small text-secondary">
-                            <span>⚓ Riesgo de Ruta/Puerto:</span>
-                            <span class="fw-bold">${(p.riesgo_logistico * 100).toFixed(0)}%</span>
+                            <span>⚓ Riesgo Logístico:</span>
+                            <span class="fw-bold">${(rLogistico * 100).toFixed(0)}%</span>
                         </div>
                         <div class="progress" style="height: 6px;">
-                            <div class="progress-bar bg-secondary" role="progressbar" style="width: ${p.riesgo_logistico * 100}%"></div>
+                            <div class="progress-bar bg-secondary" role="progressbar" style="width: ${rLogistico * 100}%"></div>
                         </div>
                     </div>
                     <div class="col-sm-6">
                         <div class="d-flex justify-content-between mb-1 small text-secondary">
-                            <span>📈 Riesgo Cambiario/Macro:</span>
-                            <span class="fw-bold">${(p.riesgo_macro * 100).toFixed(0)}%</span>
+                            <span>📈 Riesgo País (Macro):</span>
+                            <span class="fw-bold">${(rMacro * 100).toFixed(0)}%</span>
                         </div>
                         <div class="progress" style="height: 6px;">
-                            <div class="progress-bar bg-dark" role="progressbar" style="width: ${p.riesgo_macro * 100}%"></div>
+                            <div class="progress-bar bg-dark" role="progressbar" style="width: ${rMacro * 100}%"></div>
                         </div>
                     </div>
                 </div>
@@ -164,4 +171,5 @@ function renderizarRiesgosCriticos() {
         `;
         contenedor.insertAdjacentHTML('beforeend', tarjetaHtml);
     });
+}
 }
