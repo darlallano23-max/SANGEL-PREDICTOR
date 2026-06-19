@@ -8,6 +8,7 @@ body {
 
 #wrapper {
     overflow-x: hidden;
+    display: flex; /* Asegura el comportamiento inline en pantallas grandes */
 }
 
 #sidebar-wrapper {
@@ -15,6 +16,7 @@ body {
     width: 250px;
     transition: margin 0.25s ease-out;
     background-color: #1a1d20 !important;
+    position: relative;
 }
 
 #sidebar-wrapper .sidebar-heading {
@@ -24,11 +26,12 @@ body {
 }
 
 #sidebar-wrapper .list-group {
-    width: 250px;
+    width: 100%; /* Cambiado a 100% para evitar desbordes */
 }
 
 #page-content-wrapper {
-    min-width: 100vw;
+    flex: 1;
+    width: 100%;
     background-color: #f4f6f9;
 }
 
@@ -36,6 +39,8 @@ body {
     border: none !important;
     padding: 20px 30px;
     font-size: 0.95rem;
+    width: 100%;
+    text-align: left;
 }
 
 .list-group-item.active {
@@ -66,10 +71,51 @@ body {
 }
 
 @media (max-width: 768px) {
-    #map {
-        height: 300px; /* Altura reducida sólo en celulares */
+    #wrapper {
+        flex-direction: column; /* Apila el menú y el contenido verticalmente en el celular */
     }
-    #wrapper.toggled #sidebar-wrapper {
-        margin-left: -250px;
+
+    #sidebar-wrapper {
+        width: 100% !important;   /* El menú ocupa todo el ancho de la pantalla */
+        min-height: auto !important; /* Libera los 100vh para que no tape la pantalla completa */
+        margin-left: 0 !important;   /* Evita bloqueos por márgenes */
+    }
+
+    #sidebar-wrapper .list-group {
+        width: 100%;
+    }
+
+    .list-group-item {
+        padding: 12px 20px; /* Botones ligeramente más compactos y fáciles de presionar en celular */
+    }
+
+    /* Ajuste de la posición absoluta del footer del menú "Modelo Activo | 2026" */
+    #sidebar-wrapper .position-absolute {
+        position: relative !important;
+        width: 100% !important;
+        margin-top: 10px;
+    }
+
+    #page-content-wrapper {
+        width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    #map {
+        height: 320px; /* Altura optimizada para que el mapa se vea genial sin comerse toda la pantalla */
+    }
+
+    /* Evita que los textos y títulos gigantescos deformen los contenedores en pantallas de 5.5 pulgadas */
+    h3, .fs-3 {
+        font-size: 1.35rem !important;
+    }
+    h2, .fs-2 {
+        font-size: 1.6rem !important;
+    }
+    
+    /* Pequeño respiro extra a los contenedores internos en móviles */
+    .container-fluid {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
     }
 }
