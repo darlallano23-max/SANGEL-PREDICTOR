@@ -78,6 +78,9 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="row mt-4" id="contenedor-paises-macro">
+                        </div>
                 </div>
 
                 <div id="modulo-calculadora" class="modulo-seccion d-none">
@@ -170,82 +173,83 @@
                     </div>
                 </div>
 
-               <div id="modulo-simulador" class="modulo-seccion d-none">
-    <div class="row g-4">
-        <div class="col-xl-4 col-lg-5">
-            <div class="card p-4 shadow-sm bg-white border-0 h-100">
-                <h5 class="card-title mb-1 fw-bold text-dark">
-                    <i class="bi bi-sliders me-2 text-warning"></i>Simulación de Estrés
-                </h5>
-                <p class="text-muted small mb-4">Ajusta las variables críticas globales para estresar la cadena de suministro y predecir sobrecostos.</p>
-                
-                <form id="form-whatif">
-                    <div class="mb-4">
-                        <label for="stress-flete" class="form-label d-flex justify-content-between fw-semibold small">
-                            <span>🚢 Incremento General de Fletes:</span>
-                            <span class="text-primary fw-bold" id="val-stress-flete">+0%</span>
-                        </label>
-                        <input type="range" class="form-range" id="stress-flete" min="0" max="150" value="0" step="5">
-                    </div>
+                <div id="modulo-simulador" class="modulo-seccion d-none">
+                    <div class="row g-4">
+                        <div class="col-xl-4 col-lg-5">
+                            <div class="card p-4 shadow-sm bg-white border-0 h-100">
+                                <h5 class="card-title mb-1 fw-bold text-dark">
+                                    <i class="bi bi-sliders me-2 text-warning"></i>Simulación de Estrés
+                                </h5>
+                                <p class="text-muted small mb-4">Ajusta las variables críticas globales para estresar la cadena de suministro y predecir sobrecostos.</p>
+                                
+                                <form id="form-whatif">
+                                    <div class="mb-4">
+                                        <label for="stress-flete" class="form-label d-flex justify-content-between fw-semibold small">
+                                            <span>🚢 Incremento General de Fletes:</span>
+                                            <span class="text-primary fw-bold" id="val-stress-flete">+0%</span>
+                                        </label>
+                                        <input type="range" class="form-range" id="stress-flete" min="0" max="150" value="0" step="5">
+                                    </div>
 
-                    <div class="mb-4">
-                        <label for="stress-riesgo" class="form-label d-flex justify-content-between fw-semibold small">
-                            <span>⚠️ Multiplicador de Riesgo País:</span>
-                            <span class="text-danger fw-bold" id="val-stress-riesgo">1.0x (Normal)</span>
-                        </label>
-                        <input type="range" class="form-range" id="stress-riesgo" min="1.0" max="2.5" value="1.0" step="0.1">
-                    </div>
+                                    <div class="mb-4">
+                                        <label for="stress-riesgo" class="form-label d-flex justify-content-between fw-semibold small">
+                                            <span>⚠️ Multiplicador de Riesgo País:</span>
+                                            <span class="text-danger fw-bold" id="val-stress-riesgo">1.0x (Normal)</span>
+                                        </label>
+                                        <input type="range" class="form-range" id="stress-riesgo" min="1.0" max="2.5" value="1.0" step="0.1">
+                                    </div>
 
-                    <div class="mb-4">
-                        <label for="stress-demora" class="form-label d-flex justify-content-between fw-semibold small">
-                            <span>⏳ Días de Demora Estimados (Bodegaje):</span>
-                            <span class="text-warning fw-bold" id="val-stress-demora">0 días</span>
-                        </label>
-                        <input type="range" class="form-range" id="stress-demora" min="0" max="30" value="0" step="1">
-                    </div>
-                </form>
+                                    <div class="mb-4">
+                                        <label for="stress-demora" class="form-label d-flex justify-content-between fw-semibold small">
+                                            <span>⏳ Días de Demora Estimados (Bodegaje):</span>
+                                            <span class="text-warning fw-bold" id="val-stress-demora">0 días</span>
+                                        </label>
+                                        <input type="range" class="form-range" id="stress-demora" min="0" max="30" value="0" step="1">
+                                    </div>
+                                </form>
 
-                <div class="p-3 bg-light rounded border-start border-warning border-4 mt-auto">
-                    <div class="d-flex">
-                        <i class="bi bi-lightbulb-fill text-warning fs-4 me-2"></i>
-                        <div>
-                            <h6 class="m-0 fw-bold small text-dark">Estrategia de Mitigación</h6>
-                            <p class="m-0 small text-muted" id="texto-mitigacion">El escenario actual es estable. No se requieren rutas alternativas de contingencia.</p>
+                                <div class="p-3 bg-light rounded border-start border-warning border-4 mt-auto">
+                                    <div class="d-flex">
+                                        <i class="bi bi-lightbulb-fill text-warning fs-4 me-2"></i>
+                                        <div>
+                                            <h6 class="m-0 fw-bold small text-dark">Estrategia de Mitigación</h6>
+                                            <p class="m-0 small text-muted" id="texto-mitigacion">El escenario actual es estable. No se requieren rutas alternativas de contingencia.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-8 col-lg-7">
+                            <div class="card p-4 shadow-sm bg-white border-0 h-100">
+                                <h5 class="card-title mb-2 fw-bold text-dark">
+                                    <i class="bi bi-bar-chart-line me-2 text-success"></i>Análisis de Impacto Proyectado
+                                </h5>
+                                <p class="text-muted small mb-3">Comparativa del Costo Total DDP Puesto en Bodega por contenedor/embarque.</p>
+                                
+                                <div class="row g-2 mb-4">
+                                    <div class="col-sm-6">
+                                        <div class="p-2 bg-light rounded text-center border">
+                                            <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.75rem;">Sobrecosto Proyectado</small>
+                                            <span class="fs-5 fw-bold text-danger" id="kpi-sobrecosto">$ 0.00</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="p-2 bg-light rounded text-center border">
+                                            <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.75rem;">Impacto en Margen Unitario</small>
+                                            <span class="fs-5 fw-bold text-dark" id="kpi-impacto-unitario">0.00%</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex-grow-1 d-flex align-items-center justify-content-center" style="position: relative; height: 280px;">
+                                    <canvas id="chartWhatIf"></canvas>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <div class="col-xl-8 col-lg-7">
-            <div class="card p-4 shadow-sm bg-white border-0 h-100">
-                <h5 class="card-title mb-2 fw-bold text-dark">
-                    <i class="bi bi-bar-chart-line me-2 text-success"></i>Análisis de Impacto Proyectado
-                </h5>
-                <p class="text-muted small mb-3">Comparativa del Costo Total DDP Puesto en Bodega por contenedor/embarque.</p>
-                
-                <div class="row g-2 mb-4">
-                    <div class="col-sm-6">
-                        <div class="p-2 bg-light rounded text-center border">
-                            <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.75rem;">Sobrecosto Proyectado</small>
-                            <span class="fs-5 fw-bold text-danger" id="kpi-sobrecosto">$ 0.00</span>
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="p-2 bg-light rounded text-center border">
-                            <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.75rem;">Impacto en Margen Unitario</small>
-                            <span class="fs-5 fw-bold text-dark" id="kpi-impacto-unitario">0.00%</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex-grow-1 d-flex align-items-center justify-content-center" style="position: relative; height: 280px;">
-                    <canvas id="chartWhatIf"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
                 <div id="modulo-mapa" class="modulo-seccion d-none">
                     <div class="card p-3 shadow-sm bg-white border-0">
                         <h5 class="mb-1 fw-bold text-dark"><i class="bi bi-geo-alt-fill text-danger me-2"></i>Geovisor de Riesgo e Indicadores Financieros</h5>
@@ -253,113 +257,114 @@
                         <div id="map" style="height: 520px; width: 100%; border-radius: 8px;" class="shadow-inner border"></div>
                     </div>
                 </div>
-                <div id="modulo-riesgos" class="modulo-seccion d-none">
-    <div class="row g-4">
-        <div class="col-xl-4 col-lg-5">
-            <div class="card p-4 shadow-sm bg-white border-0 h-100">
-                <h5 class="fw-bold text-dark mb-1"><i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>Monitoreo de Riesgos</h5>
-                <p class="text-muted small mb-4">Estado actual de las amenazas operativas y financieras sobre tus rutas comerciales activas.</p>
-                
-                <div class="p-3 bg-light rounded text-center border mb-3">
-                    <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.75rem;">Países en Alerta Máxima</small>
-                    <span class="fs-1 fw-bold text-danger" id="kpi-contador-riesgos">0</span>
-                </div>
 
-                <div class="alert alert-warning d-flex align-items-center small" role="alert">
-                    <i class="bi bi-info-circle-fill me-2 fs-5"></i>
-                    <div>
-                        Los indicadores se actualizan dinámicamente según las variaciones macroeconómicas globales.
+                <div id="modulo-riesgos" class="modulo-seccion d-none">
+                    <div class="row g-4">
+                        <div class="col-xl-4 col-lg-5">
+                            <div class="card p-4 shadow-sm bg-white border-0 h-100">
+                                <h5 class="fw-bold text-dark mb-1"><i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>Monitoreo de Riesgos</h5>
+                                <p class="text-muted small mb-4">Estado actual de las amenazas operativas y financieras sobre tus rutas comerciales activas.</p>
+                                
+                                <div class="p-3 bg-light rounded text-center border mb-3">
+                                    <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.75rem;">Países en Alerta Máxima</small>
+                                    <span class="fs-1 fw-bold text-danger" id="kpi-contador-riesgos">0</span>
+                                </div>
+
+                                <div class="alert alert-warning d-flex align-items-center small" role="alert">
+                                    <i class="bi bi-info-circle-fill me-2 fs-5"></i>
+                                    <div>
+                                        Los indicadores se actualizan dinámicamente según las variaciones macroeconómicas globales.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-8 col-lg-7">
+                            <div class="card p-4 shadow-sm bg-white border-0 h-100">
+                                <h5 class="fw-bold text-dark mb-3"><i class="bi bi-bell-fill text-warning me-2"></i>Alertas Tempranas Detectadas</h5>
+                                <div id="contenedor-alertas-criticas" class="d-flex flex-column gap-3">
+                                    <p class="text-muted small text-center my-4">Cargando matriz de vulnerabilidades...</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <div class="col-xl-8 col-lg-7">
-            <div class="card p-4 shadow-sm bg-white border-0 h-100">
-                <h5 class="fw-bold text-dark mb-3"><i class="bi bi-bell-fill text-warning me-2"></i>Alertas Tempranas Detectadas</h5>
-                
-                <div id="contenedor-alertas-criticas" class="d-flex flex-column gap-3">
-                    <p class="text-muted small text-center my-4">Cargando matriz de vulnerabilidades...</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
                 <div id="modulo-reporte" class="modulo-seccion d-none">
-    <div class="row g-4">
-        <div class="col-xl-4 col-lg-5">
-            <div class="card p-4 shadow-sm bg-white border-0 h-100">
-                <h5 class="fw-bold text-dark mb-3">
-                    <i class="bi bi-file-earmark-bar-graph-fill text-primary me-2"></i>Configurar Exportación
-                </h5>
-                <p class="text-muted small">Selecciona los criterios de filtrado para empaquetar el informe ejecutivo de SANGEL Predictor.</p>
-                
-                <hr class="text-muted">
-                
-                <div class="mb-3">
-                    <label class="form-label small fw-bold text-secondary">Formato de Salida</label>
-                    <select class="form-select form-select-sm" id="reporte-formato">
-                        <option value="csv">Matriz de Datos Comercial (CSV / Excel)</option>
-                        <option value="html-print">Informe Ejecutivo Imprimible (HTML/PDF)</option>
-                    </select>
-                </div>
+                    <div class="row g-4">
+                        <div class="col-xl-4 col-lg-5">
+                            <div class="card p-4 shadow-sm bg-white border-0 h-100">
+                                <h5 class="fw-bold text-dark mb-3">
+                                    <i class="bi bi-file-earmark-bar-graph-fill text-primary me-2"></i>Configurar Exportación
+                                </h5>
+                                <p class="text-muted small">Selecciona los criterios de filtrado para empaquetar el informe ejecutivo de SANGEL Predictor.</p>
+                                
+                                <hr class="text-muted">
+                                
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold text-secondary">Formato de Salida</label>
+                                    <select class="form-select form-select-sm" id="reporte-formato">
+                                        <option value="csv">Matriz de Datos Comercial (CSV / Excel)</option>
+                                        <option value="html-print">Informe Ejecutivo Imprimible (HTML/PDF)</option>
+                                    </select>
+                                </div>
 
-                <div class="mb-4">
-                    <label class="form-label small fw-bold text-secondary">Filtro de Mercados</label>
-                    <select class="form-select form-select-sm" id="reporte-filtro">
-                        <option value="todos">Todos los países cargados</option>
-                        <option value="criticos">Solo mercados en Alerta (Riesgo > 40%)</option>
-                    </select>
-                </div>
+                                <div class="mb-4">
+                                    <label class="form-label small fw-bold text-secondary">Filtro de Mercados</label>
+                                    <select class="form-select form-select-sm" id="reporte-filtro">
+                                        <option value="todos">Todos los países cargados</option>
+                                        <option value="criticos">Solo mercados en Alerta (Riesgo > 40%)</option>
+                                    </select>
+                                </div>
 
-                <button class="btn btn-primary btn-sm w-100 fw-bold py-2 shadow-sm" onclick="generarReporte()">
-                    <i class="bi bi-cloud-download-fill me-2"></i>Procesar y Descargar
-                </button>
-            </div>
-        </div>
+                                <button class="btn btn-primary btn-sm w-100 fw-bold py-2 shadow-sm" onclick="generarReporte()">
+                                    <i class="bi bi-cloud-download-fill me-2"></i>Procesar y Descargar
+                                </button>
+                            </div>
+                        </div>
 
-        <div class="col-xl-8 col-lg-7">
-            <div class="card p-4 shadow-sm bg-white border-0 h-100">
-                <h5 class="fw-bold text-dark mb-3">
-                    <i class="bi bi-shield-check-fill text-success me-2"></i>Consola de Auditoría Operativa
-                </h5>
-                <p class="text-muted small mb-4">Validación física de las métricas de control antes de la firma digital del reporte.</p>
-                
-                <div class="table-responsive bg-light p-3 rounded border mb-3">
-                    <table class="table table-sm table-borderless m-0 small">
-                        <thead>
-                            <tr class="border-bottom">
-                                <th class="text-secondary pb-2">Componente de Auditoría</th>
-                                <th class="text-end text-secondary pb-2">Métrica / Estado</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="align-middle">
-                                <td class="py-2"><i class="bi bi-database text-primary me-2"></i> Registros en Memoria Activa</td>
-                                <td class="text-end fw-bold text-dark py-2" id="audit-registros">0 mercados detectados</td>
-                            </tr>
-                            <tr class="align-middle">
-                                <td class="py-2"><i class="bi bi-exclamation-octagon text-danger me-2"></i> Filtro de Alerta Temprana</td>
-                                <td class="text-end fw-bold text-dark py-2">Logístico > 40% | País > 25%</td>
-                            </tr>
-                            <tr class="align-middle">
-                                <td class="py-2"><i class="bi bi-cpu-fill text-info me-2"></i> Núcleo de Simulación</td>
-                                <td class="text-end py-2">
-                                    <span class="badge bg-success-subtle text-success border border-success-subtle fw-bold">SANGEL ENGINE ONLINE</span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                        <div class="col-xl-8 col-lg-7">
+                            <div class="card p-4 shadow-sm bg-white border-0 h-100">
+                                <h5 class="fw-bold text-dark mb-3">
+                                    <i class="bi bi-shield-check-fill text-success me-2"></i>Consola de Auditoría Operativa
+                                </h5>
+                                <p class="text-muted small mb-4">Validación física de las métricas de control antes de la firma digital del reporte.</p>
+                                
+                                <div class="table-responsive bg-light p-3 rounded border mb-3">
+                                    <table class="table table-sm table-borderless m-0 small">
+                                        <thead>
+                                            <tr class="border-bottom">
+                                                <th class="text-secondary pb-2">Componente de Auditoría</th>
+                                                <th class="text-end text-secondary pb-2">Métrica / Estado</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="align-middle">
+                                                <td class="py-2"><i class="bi bi-database text-primary me-2"></i> Registros en Memoria Activa</td>
+                                                <td class="text-end fw-bold text-dark py-2" id="audit-registros">0 mercados detectados</td>
+                                            </tr>
+                                            <tr class="align-middle">
+                                                <td class="py-2"><i class="bi bi-exclamation-octagon text-danger me-2"></i> Filtro de Alerta Temprana</td>
+                                                <td class="text-end fw-bold text-dark py-2">Logístico > 40% | País > 25%</td>
+                                            </tr>
+                                            <tr class="align-middle">
+                                                <td class="py-2"><i class="bi bi-cpu-fill text-info me-2"></i> Núcleo de Simulación</td>
+                                                <td class="text-end py-2">
+                                                    <span class="badge bg-success-subtle text-success border border-success-subtle fw-bold">SANGEL ENGINE ONLINE</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
 
-                <div class="p-3 rounded border-start border-primary border-3 bg-light text-muted small">
-                    <i class="bi bi-info-circle-fill me-2 text-primary"></i>
-                    Los reportes generados en formato CSV utilizan codificación universal compatible con Microsoft Excel, Power BI y matrices de inteligencia comercial.
+                                <div class="p-3 rounded border-start border-primary border-3 bg-light text-muted small">
+                                    <i class="bi bi-info-circle-fill me-2 text-primary"></i>
+                                    Los reportes generados en formato CSV utilizan codificación universal compatible con Microsoft Excel, Power BI y matrices de inteligencia comercial.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
 
             </div>
         </div>
