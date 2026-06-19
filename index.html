@@ -1,127 +1,49 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SANGEL PREDICTOR</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="css/styles.css">
-</head>
-<body>
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-dark text-white d-flex align-items-center">
+        <h5 class="margin-0" style="margin: 0; font-size: 1.1rem;">
+            📊 Calculadora COMEX & Viabilidad Global
+        </h5>
+    </div>
+    <div class="card-body">
+        <p class="text-muted" style="font-size: 0.85rem;">
+            Configura las variables de tu importación. El mapa se repintará automáticamente indicándote qué mercados te convienen financieramente según sus costos y riesgos logísticos.
+        </p>
+        
+        <form id="form-calculadora-comex" oninput="if(typeof calcularYRepintarMapa === 'function') calcularYRepintarMapa()">
+            <div class="row g-3">
+                <div class="col-md-4 col-sm-6">
+                    <label for="input-cantidad" class="form-label font-weight-bold" style="font-size: 0.85rem; font-weight: 600;">
+                        📦 Cantidad Total:
+                    </label>
+                    <input type="number" class="form-control form-control-sm" id="input-cantidad" placeholder="Ej. 1000" min="1" value="1000">
+                </div>
 
-    <div class="d-flex" id="wrapper">
-        <div class="bg-dark text-white" id="sidebar-wrapper">
-            <div class="sidebar-heading text-center py-4 fs-4 fw-bold text-uppercase border-bottom">
-                <i class="bi bi-box-seam-fill me-2"></i>Sangel Predictor
-            </div>
-            <div class="list-group list-group-flush my-3">
-                <button onclick="cambiarModulo('modulo-macro')" class="list-group-item list-group-item-action bg-transparent text-white active" id="btn-macro">
-                    <i class="bi bi-globe-americas me-2"></i>Módulo Macroeconómico
-                </button>
-                <button onclick="cambiarModulo('modulo-calculadora')" class="list-group-item list-group-item-action bg-transparent text-white" id="btn-calc">
-                    <i class="bi bi-calculator me-2"></i>Calculadora Comex (Excel)
-                </button>
-                <button onclick="cambiarModulo('modulo-simulador')" class="list-group-item list-group-item-action bg-transparent text-white" id="btn-sim">
-                    <i class="bi bi-sliders me-2"></i>Simulador "What-If"
-                </button>
-                <button onclick="cambiarModulo('modulo-mapa')" class="list-group-item list-group-item-action bg-transparent text-white" id="btn-mapa">
-                    <i class="bi bi-map me-2"></i>Mapa de Calor Global
-                </button>
-                <button onclick="cambiarModulo('modulo-riesgos')" class="list-group-item list-group-item-action bg-transparent text-white" id="btn-riesgos">
-                    <i class="bi bi-exclamation-triangle me-2"></i>Riesgos Críticos
-                </button>
-                <button onclick="cambiarModulo('modulo-reporte')" class="list-group-item list-group-item-action bg-transparent text-white" id="btn-rep">
-                    <i class="bi bi-file-earmark-pdf me-2"></i>Reporting & Export
-                </button>
-            </div>
-            <div class="position-absolute bottom-0 text-center w-100 p-3 border-top border-secondary text-muted">
-                <small>Modelo Activo | 2026</small>
-            </div>
-        </div>
-
-        <div id="page-content-wrapper" class="w-100">
-            <nav class="navbar navbar-expand-lg navbar-light bg-white py-3 px-4 border-bottom shadow-sm">
-                <h3 class="fs-3 m-0" id="titulo-modulo">Módulo Macroeconómico</h3>
-            </nav>
-
-            <div class="container-fluid px-4 py-4">
-                
-                <div id="modulo-macro" class="modulo-seccion">
-                    <div class="row g-3 my-2">
-                        <div class="col-md-4">
-                            <div class="p-3 bg-white shadow-sm d-flex justify-content-around align-items-center rounded border-start border-primary border-4">
-                                <div>
-                                    <h3 class="fs-2">17</h3>
-                                    <p class="text-muted m-0">Países Activos</p>
-                                </div>
-                                <i class="bi bi-flag fs-1 text-primary"></i>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="p-3 bg-white shadow-sm d-flex justify-content-around align-items-center rounded border-start border-danger border-4">
-                                <div>
-                                    <h3 class="fs-2">78.5%</h3>
-                                    <p class="text-muted m-0">Máxima Inflación</p>
-                                </div>
-                                <i class="bi bi-graph-up-arrow fs-1 text-danger"></i>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="p-3 bg-white shadow-sm d-flex justify-content-around align-items-center rounded border-start border-success border-4">
-                                <div>
-                                    <h3 class="fs-2">0.12</h3>
-                                    <p class="text-muted m-0">Riesgo Mínimo</p>
-                                </div>
-                                <i class="bi bi-shield-check fs-1 text-success"></i>
-                            </div>
-                        </div>
+                <div class="col-md-4 col-sm-6">
+                    <label for="input-precio" class="form-label" style="font-size: 0.85rem; font-weight: 600;">
+                        💰 Precio Unitario (EXW):
+                    </label>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text">$</span>
+                        <input type="number" class="form-control" id="input-precio" placeholder="Ej. 5.50" step="0.01" min="0.01" value="5.00">
                     </div>
                 </div>
 
-                <div id="modulo-calculadora" class="modulo-seccion d-none">
-                    <div class="row g-4">
-                        <div class="col-xl-5 col-lg-6">
-                            <div class="card p-4 shadow-sm bg-white border-0">
-                                <h5 class="card-title mb-1 fw-bold text-dark"><i class="bi bi-sliders2 me-2 text-primary"></i>Parámetros de Simulación</h5>
-                                <p class="text-muted small mb-4">Introduce las condiciones comerciales de tu operación. El mapa de calor global se adaptará en tiempo real reflejando la viabilidad financiera de las rutas.</p>
-                                
-                                <form id="form-calculadora-comex" oninput="if(typeof calcularYRepintarMapa === 'function') calcularYRepintarMapa()">
-                                    <div class="mb-3">
-                                        <label for="input-flujo" class="form-label fw-semibold small">🔄 Dirección del Flujo Comercial:</label>
-                                        <select class="form-select form-select-sm" id="input-flujo" onchange="if(typeof calcularYRepintarMapa === 'function') calcularYRepintarMapa()">
-                                            <option value="importacion" selected>📥 Importación (Traer a Ecuador)</option>
-                                            <option value="exportacion">📤 Exportación (Enviar al Mundo desde Ecuador)</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label for="input-cantidad" class="form-label fw-semibold small" id="label-cantidad">📦 Cantidad Total a Comercializar:</label>
-                                        <input type="number" class="form-control form-control-sm" id="input-cantidad" min="1" value="1000" placeholder="Ej. 1000">
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label for="input-precio" class="form-label fw-semibold small" id="label-precio">💰 Precio Unitario en Fábrica (EXW):</label>
-                                        <div class="input-group input-group-sm">
-                                            <span class="input-group-text bg-light">$</span>
-                                            <input type="number" class="form-control" id="input-precio" min="0.01" step="0.01" value="5.00" placeholder="Ej. 5.00">
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-4">
-                                        <label for="input-arancel" class="form-label fw-semibold small" id="label-arancel">📈 Porcentaje de Arancel Estimado:</label>
-                                        <div class="input-group input-group-sm">
-                                            <input type="number" class="form-control" id="input-arancel" min="0" max="100" value="10" placeholder="Ej. 10">
-                                            <span class="input-group-text bg-light">%</span>
-                                        </div>
-                                    </div>
-                                    
-                                    <button type="button" class="btn btn-sm btn-primary w-100 py-2 fw-bold" onclick="if(typeof calcularYRepintarMapa === 'function') calcularYRepintarMapa()">
-                                        <i class="bi bi-magic me-2"></i>Actualizar Capas del Mapa
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-
-                        <div class="col
+                <div class="col-md-4 col-sm-12">
+                    <label for="input-arancel" class="form-label" style="font-size: 0.85rem; font-weight: 600;">
+                        📈 Arancel Estimado:
+                    </label>
+                    <div class="input-group input-group-sm">
+                        <input type="number" class="form-control" id="input-arancel" placeholder="Ej. 15" min="0" max="100" value="10">
+                        <span class="input-group-text">%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-3 d-flex justify-content-end">
+                <button type="button" class="btn btn-sm btn-primary" onclick="if(typeof calcularYRepintarMapa === 'function') calcularYRepintarMapa()">
+                    🔮 Simular Viabilidad en Mapa
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
