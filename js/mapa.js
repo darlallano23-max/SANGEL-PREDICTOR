@@ -73,6 +73,7 @@ function cargarYAcoplarDatos() {
                             </div>
                         `;
                         featureLayer.bindPopup(contenidoPopup);
+                        
                         // Efectos visuales de Hover (pasar el mouse por encima)
                         featureLayer.on({
                             mouseover: function(e) {
@@ -89,7 +90,11 @@ function cargarYAcoplarDatos() {
             console.log("🚀 ¡Geovisor mapeado y renderizado con las capas predictivas del simulador con éxito!");
         })
         .catch(err => console.error("❌ Error al inyectar capas geográficas en el mapa:", err));
-    if (typeof calcularYRepintarMapa === 'function') {
-    calcularYRepintarMapa();
-    }
-}
+
+    // Control asíncrono seguro: Espera un momento a que calculadora.js se instancie en el DOM
+    setTimeout(() => {
+        if (typeof calcularYRepintarMapa === 'function') {
+            calcularYRepintarMapa();
+        }
+    }, 300);
+} // Aquí cierra correctamente la función cargarYAcoplarDatos
