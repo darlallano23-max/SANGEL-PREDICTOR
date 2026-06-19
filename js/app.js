@@ -174,7 +174,7 @@ function renderizarRiesgosCriticos() {
 }
 
 // =================================================================
-// SECCIÓN REPORTES: AUDITORÍA Y EXPORTACIÓN
+// SECCIÓN REPORTES: AUDITORÍA Y EXPORTACIÓN AVANZADA
 // =================================================================
 function actualizarPanelReportes() {
     const auditRegistros = document.getElementById('audit-registros');
@@ -207,24 +207,88 @@ function generarReporte() {
     }
 
     if (formato === 'csv') {
-        let contenidoCsv = "data:text/csv;charset=utf-8,";
-        contenidoCsv += "Codigo,Nombre,Riesgo_Logistico,Riesgo_Macro\n";
+        // Añadimos el BOM \uFEFF para forzar a Excel a leer UTF-8 (evita errores con tildes)
+        let contenidoCsv = "\uFEFF";
+        contenidoCsv += "Código,Nombre,Riesgo Logístico,Riesgo Macro,Tasa Inflación\n";
 
         datosAExportar.forEach(p => {
             const rLogistico = p.score_riesgo_logistico || 0;
             const rMacro = p.riesgo_pais ? p.riesgo_pais / 100 : 0;
-            contenidoCsv += `${p.pais_id || 'N/A'},${p.nombre || 'N/A'},${(rLogistico * 100).toFixed(0)}%,${(rMacro * 100).toFixed(0)}%\n`;
+            const inflacion = p.tasa_inflacion || 0;
+            contenidoCsv += `"${p.pais_id || 'N/A'}","${p.nombre || 'N/A'}",${(rLogistico * 100).toFixed(0)}%,${(rMacro * 100).toFixed(0)}%,${inflacion}%\n`;
         });
 
-        const encodedUri = encodeURI(contenidoCsv);
+        const blob = new Blob([contenidoCsv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
+        link.setAttribute("href", url);
         link.setAttribute("download", `Reporte_Sangel_Predictor_${new Date().toISOString().slice(0,10)}.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-    } else {
-        alert(`📄 ¡Reporte Ejecutivo PDF Generado con éxito!\n\nProcesando informe comprimido para ${datosAExportar.length} países seleccionados.\nLa descarga iniciará automáticamente.`);
-        console.log("Estructurando PDF con los datos auditados:", datosAExportar);
+        
+    } else if (formato === 'html-print') {
+        // --- INFORME EJECUTIVO IMPRIMIBLE (HERRAMIENTA NATIVA) ---
+        const ventanaImpresion = window.open('', '_blank');
+        
+        let filasTabla = '';
+        datosAExportar.forEach(p => {
+            const rLogistico = p.score_riesgo_logistico || 0;
+            const rMacro = p.riesgo_pais ? p.riesgo_pais / 100 : 0;
+            filasTabla += `
+                <tr>
+                    <td style="padding: 10px; border-bottom: 1px solid #ddd;"><strong>${p.pais_id || 'N/A'}</strong></td>
+                    <td style="padding: 10px; border-bottom: 1px solid #ddd;">${p.nombre || 'N/A'}</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: center;">${(rLogistico * 100).toFixed(0)}%</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: center;">${(rMacro * 100).toFixed(0)}%</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: center;">${p.tasa_inflacion || 0}%</td>
+                </tr>
+            `;
+        });
+
+        ventanaImpresion.document.write(`
+            <html>
+            <head>
+                <title>Reporte Ejecutivo - SANGEL Predictor</title>
+                <style>
+                    body { font-family: 'Arial', sans-serif; color: #333; padding: 40px; }
+                    .header { text-align: center; border-bottom: 3px solid #0d6efd; padding-bottom: 12px; margin-bottom: 30px; }
+                    .title { margin: 0; color: #1a1a1a; text-transform: uppercase; letter-spacing: 1px; }
+                    .meta { font-size: 12px; color: #666; margin-top: 6px; }
+                    table { width: 100%; border-collapse: collapse; margin-top: 25px; }
+                    th { background-color: #f8f9fa; padding: 12px; border-bottom: 2px solid #222; font-size: 13px; text-transform: uppercase; }
+                    .footer { margin-top: 60px; font-size: 11px; text-align: center; color: #888; border-top: 1px solid #eee; padding-top: 12px; }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <h2 class="title">🔮 SANGEL Predictor - Informe Global de Riesgos</h2>
+                    <div class="meta">Fecha de Emisión: ${new Date().toLocaleString()} | Inteligencia Comercial Internacional</div>
+                </div>
+                <p>Auditoría predictiva automatizada sobre la vulnerabilidad de las operaciones comerciales de los mercados listados:</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="text-align: left;">ID</th>
+                            <th style="text-align: left;">Mercado / Socio Comercial</th>
+                            <th>Riesgo Logístico</th>
+                            <th>Riesgo País (Macro)</th>
+                            <th>Tasa Inflación</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${filasTabla}
+                    </tbody>
+                </table>
+                <div class="footer">
+                    SANGEL Predictor - Datos de Simulación Confidenciales.
+                </div>
+                <script>
+                    window.onload = function() { window.print(); }
+                </script>
+            </body>
+            </html>
+        `);
+        ventanaImpresion.document.close();
     }
 }
