@@ -73,6 +73,14 @@ function cargarYAcoplarDatos() {
                             </div>
                         `;
                         featureLayer.bindPopup(contenidoPopup);
+                        // Dentro de tu función cambiarModulo(moduloId) en js/app.js, abajo de la lógica del mapa (Línea ~65) agrega esto:
+                        if (moduloId === 'modulo-simulador') {
+                            setTimeout(() => {
+                                if (typeof ejecutarSimulacionWhatIf === 'function') {
+                                    ejecutarSimulacionWhatIf();
+                                }
+                            }, 200);
+                        }
 
                         // Efectos visuales de Hover (pasar el mouse por encima)
                         featureLayer.on({
