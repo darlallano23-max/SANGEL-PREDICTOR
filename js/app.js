@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 // Función para cambiar de pestaña estilo SPA (Single Page Application)
-function cambiarModulo(moduloId) {
+window.cambiarModulo = function(moduloId) {
     // 1. Ocultar todos los módulos
     document.querySelectorAll('.modulo-seccion').forEach(seccion => {
         seccion.classList.add('d-none');
