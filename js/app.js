@@ -32,21 +32,39 @@ function cambiarModulo(moduloId) {
         btn.classList.remove('active');
     });
     
-    // 4. Activar el botón correspondiente si existe
-    // (Opcional: puedes añadir lógica para ponerle .active al botón clickeado si usas event targets)
+    // 4. Activar el botón correspondiente según el módulo seleccionado
+    const mapeoBotones = {
+        'modulo-macro': 'btn-macro',
+        'modulo-calculadora': 'btn-calc',
+        'modulo-simulador': 'btn-sim',
+        'modulo-mapa': 'btn-mapa',
+        'modulo-riesgos': 'btn-riesgos',
+        'modulo-reporte': 'btn-rep'
+    };
 
+    const idBotonActivo = mapeoBotones[moduloId];
+    if (idBotonActivo) {
+        const btnActivo = document.getElementById(idBotonActivo);
+        if (btnActivo) {
+            btnActivo.classList.add('active');
+        }
+    }
+    
     // 5. Títulos de la barra superior según la sección activa
     const titulos = {
         'modulo-macro': 'Módulo Macroeconómico',
-        'modulo-calculadora': 'Calculadora de Comercio Exterior',
-        'modulo-simulador': 'Simulador de Escenarios Dinámicos ("What-If")',
-        'modulo-mapa': 'Mapa de Calor Global de Riesgo',
-        'modulo-riesgos': 'Riesgos Críticos Próximos',
-        'modulo-reporte': 'Reporting Ejecutivo y Exportación'
+        'modulo-calculadora': 'Calculadora Comex (Excel)',
+        'modulo-simulador': 'Simulador "What-If"',
+        'modulo-mapa': 'Mapa de Calor Global',
+        'modulo-riesgos': 'Riesgos Críticos',
+        'modulo-reporte': 'Reporting & Export'
     };
     
     if (titulos[moduloId]) {
-        document.getElementById('titulo-modulo').innerText = titulos[moduloId];
+        const tituloNavbar = document.getElementById('titulo-modulo');
+        if (tituloNavbar) {
+            tituloNavbar.innerText = titulos[moduloId];
+        }
     }
     
     // 6. CONTROL CRÍTICO Y SEGURO DEL MAPA:
